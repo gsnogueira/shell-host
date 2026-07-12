@@ -1,5 +1,5 @@
 const DEFAULT_DEV_FINANCAS_REMOTE = 'http://localhost:3003/'
-const DEFAULT_PROD_FINANCAS_REMOTE = 'https://financas.vercel.app/'
+const DEFAULT_PROD_FINANCAS_REMOTE = 'https://tech-challenge-umber.vercel.app/'
 
 function getDefaultFinancasRemoteUrl(): string {
   return import.meta.env.PROD

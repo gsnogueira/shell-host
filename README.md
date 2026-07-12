@@ -62,8 +62,8 @@ npm run dev
 
 Defina no projeto da shell na Vercel:
 
-- `VITE_FINANCAS_REMOTE_URL=https://<seu-mfe>.vercel.app/`
-- `VITE_FINANCAS_ALLOWED_ORIGINS=https://<seu-mfe>.vercel.app`
+- `VITE_FINANCAS_REMOTE_URL=https://tech-challenge-umber.vercel.app/`
+- `VITE_FINANCAS_ALLOWED_ORIGINS=https://tech-challenge-umber.vercel.app`
 
 Opcionalmente, adicione mais origens separadas por virgula:
 
