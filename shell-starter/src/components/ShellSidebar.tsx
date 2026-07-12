@@ -1,24 +1,18 @@
-import type { ShellNavItem, ShellUser } from './types'
+import type { ShellNavItem, ShellUser } from './types';
 
 interface ShellSidebarProps {
-  navItems: ShellNavItem[]
-  activePath: string
-  onNavigate?: (href: string) => void
-  user?: ShellUser
+  navItems: ShellNavItem[];
+  activePath: string;
+  user?: ShellUser;
 }
 
 const defaultUser: ShellUser = {
   initials: 'G',
   name: 'Gabri',
   role: 'Usuario',
-}
+};
 
-export function ShellSidebar({
-  navItems,
-  activePath,
-  onNavigate,
-  user = defaultUser,
-}: ShellSidebarProps) {
+export function ShellSidebar({ navItems, activePath, user = defaultUser }: ShellSidebarProps) {
   return (
     <aside className="sh-sidebar" aria-label="Sidebar">
       <div className="sh-logo">
@@ -35,19 +29,19 @@ export function ShellSidebar({
         <div className="sh-nav-label">Principal</div>
         {navItems.map((item) => {
           const isActive =
-            activePath === item.href || (item.href !== '/' && activePath.startsWith(item.href))
+            activePath === item.href ||
+            (item.href !== '/' && activePath.startsWith(item.href));
 
           return (
-            <button
+            <a
               key={item.href}
-              type="button"
+              href={item.href}
               className={`sh-nav-item ${isActive ? 'sh-nav-item-active' : ''}`}
               aria-current={isActive ? 'page' : undefined}
-              onClick={() => onNavigate?.(item.href)}
             >
               {item.label}
-            </button>
-          )
+            </a>
+          );
         })}
       </nav>
 
@@ -61,5 +55,5 @@ export function ShellSidebar({
         </div>
       </div>
     </aside>
-  )
+  );
 }

@@ -1,8 +1,9 @@
 :root {
   --sh-bg: #0d0f14;
   --sh-surface: #13161e;
-  --sh-surface-2: #171b24;
-  --sh-border: rgba(255, 255, 255, 0.08);
+  --sh-surface-2: #1a1e29;
+  --sh-border: rgba(255, 255, 255, 0.07);
+  --sh-border-2: rgba(255, 255, 255, 0.12);
   --sh-text: #e8eaf0;
   --sh-muted: #7b8099;
   --sh-hint: #4a5070;
@@ -11,6 +12,7 @@
   --sh-purple: #9d7dff;
   --sh-purple-dim: rgba(157, 125, 255, 0.12);
   --sh-radius: 12px;
+  --sh-radius-lg: 18px;
   --sh-sidebar-width: 240px;
   --sh-font: 'Sora', sans-serif;
 }
@@ -21,9 +23,7 @@
 }
 
 .sh-root {
-  min-height: 100dvh;
-  display: flex;
-  overflow: hidden;
+  min-height: 100vh;
   background: var(--sh-bg);
   color: var(--sh-text);
   font-family: var(--sh-font);
@@ -31,13 +31,17 @@
 
 .sh-sidebar {
   width: var(--sh-sidebar-width);
-  min-height: 100dvh;
+  min-height: 100vh;
   background: var(--sh-surface);
   border-right: 1px solid var(--sh-border);
   display: flex;
   flex-direction: column;
   padding: 28px 0;
-  flex: 0 0 var(--sh-sidebar-width);
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 100;
 }
 
 .sh-logo {
@@ -84,11 +88,6 @@
 }
 
 .sh-nav-item {
-  appearance: none;
-  width: 100%;
-  border: 0;
-  background: transparent;
-  text-align: left;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -96,9 +95,9 @@
   font-size: 13.5px;
   font-weight: 500;
   color: var(--sh-muted);
+  text-decoration: none;
   border-left: 3px solid transparent;
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-  cursor: pointer;
+  transition: all 0.15s;
 }
 
 .sh-nav-item:hover {
@@ -110,12 +109,6 @@
   color: var(--sh-green);
   background: var(--sh-green-dim);
   border-left-color: var(--sh-green);
-}
-
-.sh-nav-item:focus-visible,
-.sh-btn:focus-visible {
-  outline: 2px solid var(--sh-green);
-  outline-offset: 2px;
 }
 
 .sh-sidebar-footer {
@@ -144,48 +137,40 @@
 }
 
 .sh-main {
-  min-width: 0;
-  min-height: 100dvh;
-  flex: 1;
+  margin-left: var(--sh-sidebar-width);
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
 }
 
 .sh-topbar {
+  border-bottom: 1px solid var(--sh-border);
   background: var(--sh-surface);
-  border-bottom: 1px solid transparent;
   position: sticky;
   top: 0;
   z-index: 50;
 }
 
 .sh-topbar-inner {
+  max-width: 1100px;
+  margin: 0 auto;
   width: 100%;
-  max-width: none;
-  margin: 0;
-  padding: 12px 28px 10px;
+  padding: 20px 28px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
 }
 
-.sh-page-title,
-.sh-title {
-  font-size: 18px;
+.sh-page-title {
+  font-size: 20px;
   font-weight: 700;
   letter-spacing: -0.3px;
-  margin: 0;
-}
-
-.sh-page-sub,
-.sh-caption {
-  font-size: 11px;
-  color: var(--sh-muted);
 }
 
 .sh-page-sub {
+  font-size: 12px;
+  color: var(--sh-muted);
   margin-top: 2px;
 }
 
@@ -194,95 +179,6 @@
   gap: 10px;
   align-items: center;
   flex-wrap: wrap;
-}
-
-.sh-badge {
-  margin: 0;
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--sh-hint);
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-}
-
-.sh-caption {
-  margin: 0;
-  padding-bottom: 10px;
-  padding-left: 28px;
-  padding-right: 28px;
-}
-
-.sh-content {
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-  width: 100%;
-  max-width: none;
-  margin: 0;
-}
-
-.remote-panel {
-  height: 100%;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  background: transparent;
-  border: 0;
-  border-radius: 0;
-  box-shadow: none;
-}
-
-.remote-panel-header {
-  padding: 0 0 12px;
-}
-
-.remote-panel-header h2 {
-  margin: 0 0 0.25rem;
-  color: var(--sh-text);
-}
-
-.remote-panel-header p,
-.remote-route-hint,
-.financas-toolbar p,
-.remote-loading {
-  color: var(--sh-muted);
-}
-
-.remote-panel-header p,
-.remote-route-hint,
-.financas-toolbar {
-  margin: 0;
-}
-
-.remote-panel-header span,
-.remote-route-hint span {
-  color: var(--sh-text);
-  font-weight: 500;
-}
-
-.remote-frame {
-  flex: 1;
-  min-height: 0;
-  width: 100%;
-  border: 0;
-  display: block;
-  background: var(--sh-bg);
-}
-
-.remote-preload-frame {
-  position: absolute;
-  width: 0;
-  height: 0;
-  border: 0;
-  overflow: hidden;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.remote-loading,
-.fallback {
-  padding: 14px 0;
 }
 
 .sh-btn {
@@ -313,7 +209,7 @@
 .sh-btn-ghost {
   background: transparent;
   color: var(--sh-muted);
-  border-color: var(--sh-border);
+  border-color: var(--sh-border-2);
 }
 
 .sh-btn-ghost:hover {
@@ -321,52 +217,56 @@
   background: var(--sh-surface-2);
 }
 
-.sh-btn:focus-visible {
-  outline: 2px solid var(--sh-green);
-  outline-offset: 2px;
+.sh-content {
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 32px 28px;
 }
 
-.fallback h3 {
-  margin: 0 0 0.35rem;
-  color: #ffe1c7;
+.sh-module-frame {
+  width: 100%;
+  height: calc(100vh - 180px);
+  min-height: 700px;
+  border: 1px solid var(--sh-border);
+  border-radius: var(--sh-radius-lg);
+  background: var(--sh-surface);
 }
 
-.fallback p {
-  margin: 0 0 0.65rem;
-  color: #ffd6ad;
+.sh-status {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--sh-border);
+  background: var(--sh-surface-2);
+  color: var(--sh-muted);
+  font-size: 13px;
 }
 
-.fallback button {
-  margin-top: 0.25rem;
+.sh-status-error {
+  border-color: rgba(255, 79, 110, 0.3);
+  color: #ff8da1;
 }
 
 @media (max-width: 980px) {
-  .sh-root {
-    flex-direction: column;
-    overflow: auto;
-  }
-
   .sh-sidebar {
+    position: static;
     width: 100%;
     min-height: auto;
-    flex-basis: auto;
     border-right: 0;
     border-bottom: 1px solid var(--sh-border);
   }
 
   .sh-main {
-    min-height: calc(100dvh - var(--sh-sidebar-width));
-    overflow: visible;
+    margin-left: 0;
   }
 
-  .sh-topbar-inner,
-  .sh-content {
-    padding-left: 20px;
-    padding-right: 20px;
+  .sh-topbar {
+    position: static;
   }
 
-  .sh-caption {
-    padding-left: 20px;
-    padding-right: 20px;
+  .sh-module-frame {
+    min-height: 560px;
+    height: 72vh;
   }
 }

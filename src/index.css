@@ -1,19 +1,7 @@
 :root {
-  --brand: #0e7c86;
-  --brand-strong: #11655f;
-  --brand-muted: #d9efef;
-  --ink: #102930;
-  --ink-soft: #446068;
-  --line: #c9dde0;
-  --panel-bg: #f7fbfb;
-  --card-bg: #ffffff;
-  --badge-bg: #edf7f8;
-  --shadow-soft: 0 14px 30px rgba(16, 41, 48, 0.08);
-  --font-main: 'Space Grotesk', 'Segoe UI', 'Trebuchet MS', sans-serif;
-
-  background: radial-gradient(circle at 20% -10%, #dff3f4 8%, #f6fbfb 42%, #fbf5e8 100%);
-  color: var(--ink-soft);
-  font: 16px/1.45 var(--font-main);
+  background: #0d0f14;
+  color: #e8eaf0;
+  font: 16px/1.45 'Sora', sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -26,13 +14,13 @@
 
 body {
   margin: 0;
+  min-height: 100dvh;
+  background: #0d0f14;
 }
 
 #root {
-  margin: 0 auto;
-  max-width: 1180px;
   min-height: 100dvh;
-  padding: 1rem;
+  width: 100%;
 }
 
 h1 {

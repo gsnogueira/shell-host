@@ -4,10 +4,15 @@ export const REMOTE_EVENTS = {
   retry: 'financas:retry',
 } as const
 
+export const FINANCAS_EVENTS = REMOTE_EVENTS
+
+export function dispatchShellEvent(name: string, detail?: Record<string, unknown>) {
+  window.dispatchEvent(new CustomEvent(name, { detail }))
+}
+
 export function emitRemoteEvent(
   name: (typeof REMOTE_EVENTS)[keyof typeof REMOTE_EVENTS],
   detail: Record<string, unknown>,
 ): void {
-  window.dispatchEvent(new CustomEvent(name, { detail }))
-  console.info(`[shell-host] ${name}`, detail)
+  dispatchShellEvent(name, detail)
 }

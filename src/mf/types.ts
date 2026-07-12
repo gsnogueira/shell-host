@@ -1,11 +1,15 @@
-export type FinancasRemoteProps = {
-  tenantId: string
+export interface FinancasRemoteProps {
+  tenantId?: string
+  locale?: string
   authToken?: string
-  locale: string
   onNavigate?: (path: string) => void
 }
 
-export type FinancasRemoteApi = {
-  mount: (element: HTMLElement, props: FinancasRemoteProps) => void
-  unmount: (element: HTMLElement) => void
+export interface FinancasRemoteModule {
+  mount: (element: HTMLElement, props?: FinancasRemoteProps) => void | Promise<void>
+  unmount: (element: HTMLElement) => void | Promise<void>
 }
+
+export type FinancasRemoteApi = FinancasRemoteModule
+
+export type FinancasRemoteStatus = 'idle' | 'loading' | 'loaded' | 'error'
