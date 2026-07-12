@@ -1,9 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { Button } from 'gabri-ui-components'
 import {
   MAX_REMOTE_RETRIES,
   REMOTE_LOAD_TIMEOUT_MS,
+  getAllowedFinancasOrigins,
   getFinancasRemoteUrl,
+  isAllowedFinancasRemote,
 } from '../config'
+import { REMOTE_EVENTS, emitRemoteEvent } from '../mf/remoteEvents'
 import { getBackoffDelayMs } from '../utils/retry'
 
 type RemoteStatus = 'loading' | 'loaded' | 'error'
@@ -12,13 +16,9 @@ type RemoteEmbedFrameProps = {
   remotePath: string
 }
 
-function emitHostEvent(name: string, detail: Record<string, unknown>): void {
-  window.dispatchEvent(new CustomEvent(name, { detail }))
-  console.info(`[shell-host] ${name}`, detail)
-}
-
 export function RemoteEmbedFrame({ remotePath }: RemoteEmbedFrameProps) {
   const remoteBaseUrl = useMemo(() => getFinancasRemoteUrl(), [])
+  const allowedOrigins = useMemo(() => getAllowedFinancasOrigins(), [])
   const [status, setStatus] = useState<RemoteStatus>('loading')
   const [attempt, setAttempt] = useState(0)
   const [version, setVersion] = useState(0)
@@ -30,6 +30,11 @@ export function RemoteEmbedFrame({ remotePath }: RemoteEmbedFrameProps) {
     return new URL(nextPath, remoteBaseUrl).toString()
   }, [remoteBaseUrl, remotePath])
 
+  const canRenderRemote = useMemo(
+    () => isAllowedFinancasRemote(remoteUrl),
+    [remoteUrl],
+  )
+
   useEffect(() => {
     setStatus('loading')
     setAttempt(0)
@@ -38,6 +43,16 @@ export function RemoteEmbedFrame({ remotePath }: RemoteEmbedFrameProps) {
   }, [remoteUrl])
 
   useEffect(() => {
+    if (!canRenderRemote) {
+      setStatus('error')
+      emitRemoteEvent(REMOTE_EVENTS.loadError, {
+        remoteUrl,
+        reason: 'origin_not_allowed',
+        allowedOrigins,
+      })
+      return
+    }
+
     if (timeoutRef.current) {
       window.clearTimeout(timeoutRef.current)
     }
@@ -48,7 +63,7 @@ export function RemoteEmbedFrame({ remotePath }: RemoteEmbedFrameProps) {
           return current
         }
 
-        emitHostEvent('financas:load_error', {
+        emitRemoteEvent(REMOTE_EVENTS.loadError, {
           remoteUrl,
           attempt,
           reason: 'timeout',
@@ -63,7 +78,7 @@ export function RemoteEmbedFrame({ remotePath }: RemoteEmbedFrameProps) {
         window.clearTimeout(timeoutRef.current)
       }
     }
-  }, [attempt, remoteUrl, version])
+  }, [allowedOrigins, attempt, canRenderRemote, remoteUrl, version])
 
   function retryLoad(manual = false): void {
     setAttempt((current) => current + 1)
@@ -71,7 +86,7 @@ export function RemoteEmbedFrame({ remotePath }: RemoteEmbedFrameProps) {
     setStatus('loading')
     setStartedAt(performance.now())
 
-    emitHostEvent('financas:retry', {
+    emitRemoteEvent(REMOTE_EVENTS.retry, {
       remoteUrl,
       manual,
       nextAttempt: attempt + 1,
@@ -80,7 +95,7 @@ export function RemoteEmbedFrame({ remotePath }: RemoteEmbedFrameProps) {
 
   function handleError(reason: 'network' | 'timeout'): void {
     setStatus('error')
-    emitHostEvent('financas:load_error', { remoteUrl, attempt, reason })
+    emitRemoteEvent(REMOTE_EVENTS.loadError, { remoteUrl, attempt, reason })
 
     if (attempt >= MAX_REMOTE_RETRIES) {
       return
@@ -93,7 +108,7 @@ export function RemoteEmbedFrame({ remotePath }: RemoteEmbedFrameProps) {
   function handleLoad(): void {
     const loadMs = Math.round(performance.now() - startedAt)
     setStatus('loaded')
-    emitHostEvent('financas:loaded', { remoteUrl, loadMs, attempt })
+    emitRemoteEvent(REMOTE_EVENTS.loaded, { remoteUrl, loadMs, attempt })
   }
 
   return (
@@ -109,23 +124,29 @@ export function RemoteEmbedFrame({ remotePath }: RemoteEmbedFrameProps) {
         <div className="fallback" role="alert">
           <h3>Falha ao carregar o modulo remoto</h3>
           <p>
-            Verifique a URL, CORS e disponibilidade do host estatico. Tentativa atual:
-            {` ${attempt}`}
+            {canRenderRemote
+              ? `Verifique a URL, CORS e disponibilidade do host estatico. Tentativa atual: ${attempt}`
+              : `Origem do remote nao permitida. Origem atual: ${new URL(remoteUrl).origin}`}
           </p>
-          <button type="button" onClick={() => retryLoad(true)}>
+          {!canRenderRemote ? (
+            <p>Origens permitidas: {allowedOrigins.join(', ')}</p>
+          ) : null}
+          <Button type="button" variant="danger" size="sm" onClick={() => retryLoad(true)}>
             Tentar novamente
-          </button>
+          </Button>
         </div>
       ) : null}
 
-      <iframe
-        key={`${remoteUrl}-${version}`}
-        title="Modulo de Financas"
-        src={remoteUrl}
-        className="remote-frame"
-        onLoad={handleLoad}
-        onError={() => handleError('network')}
-      />
+      {canRenderRemote ? (
+        <iframe
+          key={`${remoteUrl}-${version}`}
+          title="Modulo de Financas"
+          src={remoteUrl}
+          className="remote-frame"
+          onLoad={handleLoad}
+          onError={() => handleError('network')}
+        />
+      ) : null}
     </section>
   )
 }
